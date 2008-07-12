@@ -1,7 +1,9 @@
 from threading import Thread
-import socket, select
 
-MSG_BUFF = 2048
+import socket, select
+import messages
+
+MSG_BUFF = 4096
 DELIM = ';'
 class SocketScheduler:
     def __init__(self, dist_host, dist_port):
@@ -17,23 +19,38 @@ class SocketScheduler:
         
 class MessageParser():
     
+   
     def __init__(self):
-        self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die, 'C': self.die, 'K':self.die}
+        self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die_message, 'C': self.die_message, 'K':self.die_message, 'S':self.success_message, 'E': self.end_message}
+    def send_message_to_queue(self, mess):
+        print mess
+        
     def parse(self, mess):
         parse_funct = self.dict[mess[0]]
         parse_funct(mess)
         #print mess
     def init_message(self, string):
-        print 'init', string#pass
+        turple = dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard = string.split()[1:]
+        message = (messages.INIT, turple)
+        self.send_message_to_queue(message)
+        #print 'init', dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard
     def telemetry_message(self, string):
-        print 'telemetry', string
-    def die(self, string):
-        print 'die', string
-    def sucess(self, string):
-        print 'success', string        
-    def end(self, string):
-        print 'end', string
-        
+        turple = string.split()
+        message = (messages.TELE, turple)
+        self.send_message_to_queue(message)
+        #pass#print 'telemetry', string
+    def die_message(self, string):
+        reason ,timestamp = string.split()#print 'die', string
+        message = (messages.DIE, (reason, timestamp))
+        self.send_message_to_queue(message)
+        #print 'dead!', reason
+    def success_message(self, string):
+        time = string.split()[1]#print 'success', string 
+        message = (messages.SUCESS, (time))
+    def end_message(self, string):
+        time, score = string.split()[1:]#print 'end', string
+        #print 'end score:', score
+        message = (messages.END, (time, score))
 class SocketReader(Thread):
     def __init__(self, sock):
         self.sock = sock
@@ -63,8 +80,8 @@ class SocketReader(Thread):
                 if -1 ==  self.reliableRead():
                     break
                 ready_to_read, ready_to_write, error = select.select([self.sock],[],[self.sock], 30)
-            #print self.current_message
-        #print 'end!'
+        except Exception, e:
+            print e
         finally:
             self.sock.close()
         
