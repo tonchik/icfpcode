@@ -17,8 +17,7 @@ class MQueue:
     def put(self, obj):
         self.lock.acquire(True)
         if len(self.queue) == self.limit :
-            assert(0)
-            print 'queue overflow, disgard message'
+            print 'MQUEUE OVERFLOW, disgard message'
             self.queue.pop(0)
         self.queue.append(obj)
         self.nemptyevent.set()
