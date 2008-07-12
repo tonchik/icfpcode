@@ -12,7 +12,7 @@ class Sender(Thread):
     def send(self, string):
         totalsent = 0
         ready_to_read, ready_to_write, error = select.select([],[self.socket],[self.socket], 30)
-        while (totalsent < len(string)) and (len(self.ready_to_write) > 0) and (len(error) == 0):           
+        while (totalsent < len(string)) and (len(ready_to_write) > 0) and (len(error) == 0):           
             sent = self.socket.send(msg[totalsent:])
             if sent == 0:
 		print 'ERROR sock.send'
