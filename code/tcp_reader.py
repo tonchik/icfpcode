@@ -20,13 +20,11 @@ class SocketScheduler:
 class MessageParser():
     
    
-    def __init__(self,reader_2_creator, reader_2_tracker):
+    def __init__(self):
         self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die_message, 'C': self.die_message, 'K':self.die_message, 'S':self.success_message, 'E': self.end_message}
-        self.reader_2_creator, self.reader_2_tracker = reader_2_creator, reader_2_tracker
     def send_message_to_queue(self, mess):
-        #print mess
-        self.reader_2_creator.put(mess)
-        self.reader_2_tracker.put(mess)
+        print mess
+        
     def parse(self, mess):
         parse_funct = self.dict[mess[0]]
         parse_funct(mess)
@@ -59,13 +57,13 @@ class MessageParser():
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
-        reason ,timestamp = string.split()
+        reason ,timestamp = string.split()[1:]#print 'die', string
         message = (messages.DIE, (reason, timestamp))
         self.send_message_to_queue(message)
         #print 'dead!', reason
     def success_message(self, string):
         time = string.split()[1]#print 'success', string 
-        message = (messages.SUCESS, (time))
+        message = (messages.SUCCESS, (time))
         self.send_message_to_queue(message)
     def end_message(self, string):
         time, score = string.split()[1:]#print 'end', string
@@ -76,7 +74,7 @@ class SocketReader(Thread):
     def __init__(self, sock, reader_2_creator, reader_2_tracker):
         self.sock = sock
         self.current_message = ''
-        self.parser = MessageParser(reader_2_creator, reader_2_tracker)
+        self.parser = MessageParser()
         #print self.parser
         #print
         
@@ -105,10 +103,8 @@ class SocketReader(Thread):
                 if -1 ==  self.reliableRead():
                     break
                 ready_to_read, ready_to_write, error = select.select([self.sock],[],[self.sock], 30)
-        #except IOError, e:
-        #    print 'IOException', e
-        #except socket.SocketError, e:
-        #    print 'IOException', e
+        except Exception, e:
+            print e
         finally:
             self.sock.close()
         
