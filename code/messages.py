@@ -26,7 +26,7 @@ SUCCESS = 'S'
 
 SEND_MESSAGE = 'N'
 #for Sender:
-#SEND_MESSAGE = ('N', command)
+#SEND_MESSAGE = ('N', command = ';' | 'a;' | 'b;' | 'l;' | 'r;' | 'al;' | 'ar;' | 'bl' | 'br')
 #
 
 TERMINATE = 'X'
