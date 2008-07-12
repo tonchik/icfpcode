@@ -15,46 +15,32 @@ class SocketScheduler:
         self.sock.setblocking(0)
         
         
-class MessageParser():
-    
-    def __init__(self):
-        self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die, 'C': self.die, 'K':self.die}
-    def parse(self, mess):
-        parse_funct = self.dict[mess[0]]
-        parse_funct(mess)
-        #print mess
-    def init_message(self, string):
-        print 'init', string#pass
-    def telemetry_message(self, string):
-        print 'telemetry', string
-    def die(self, string):
-        print 'die', string
-    def sucess(self, string):
-        print 'success', string        
-    def end(self, string):
-        print 'end', string
+        
         
 class SocketReader(Thread):
     def __init__(self, sock):
         self.sock = sock
         self.current_message = ''
-        self.parser = MessageParser()
-        #print self.parser
-        #print
+        
         Thread.__init__(self)
         
     def sendMessage(self,mess):
-        self.parser.parse(mess)
+        pass#print 'Message:%s'%mess
     def reliableRead(self):
+            #msg = ''
+            #while ';' not in self.current_message:
             chunk = self.sock.recv(MSG_BUFF)
             if chunk == '':
-                return -1
+                return -1#RuntimeError, "socket connection broken"
             self.current_message = self.current_message + chunk
-            if DELIM in self.current_message:
-                list = self.current_message.split(";")
-                for mes in list[:-1]:
-                    self.sendMessage(mes)
-                self.current_message = list[-1]
+            while DELIM in self.current_message:
+                #self.sendMessage()
+                pos = self.current_message.find(DELIM)
+                self.sendMessage(self.current_message[:pos])
+                if pos < len(self.current_message):
+                    self.current_message = self.current_message[pos+1:]
+                else:
+                    self.current_message = ''
             return 0        
     def run(self):
         try:
@@ -68,7 +54,22 @@ class SocketReader(Thread):
         finally:
             self.sock.close()
         
-
+def MessageParser():
+    
+    def __init__(self):
+        self.dict = {'I':init_message, 'T':telemetry_message, 'B': boulder, 'C': crater, 'K':martian}
+    def parse(self, mess):
+        parse_funct = self.dict[mess[0]]
+    def init_message(self, string):
+        pass
+    def telemetry_message(self, string):
+        pass
+    def boulder(self, string):
+        pass
+    def crater(self, string):
+        pass
+    def martian(self, string):
+        pass
         
 if __name__ == '__main__':
     import sys
