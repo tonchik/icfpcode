@@ -1,7 +1,7 @@
 from threading import Thread
 
 import socket, select
-import messages
+import messages, objects
 
 MSG_BUFF = 4096
 DELIM = ';'
@@ -30,26 +30,30 @@ class MessageParser():
         parse_funct(mess)
         #print mess
     def init_message(self, string):
-        turple = dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard = string.split()[1:]
+        turple = dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard = map(float, string.split()[1:])
         message = (messages.INIT, turple)
         self.send_message_to_queue(message)
         #print 'init', dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard
     def telemetry_message(self, string):
         turple = string.split()[1:]
-        timestamp, control, x, y, dir, speed = turple[0:5]
-        objects = []
-        if len(tuple) > 5:
-            while (i < len(tuple)):
-                if tuple[i] == objects.martian:
-                    object = (objects.martian, (tuple[i+1], tuple[i+2], tuple[i+3], tuple[i+4]))
+        timestamp, control, x, y, dir, speed = turple[:6]
+        timestamp,  x, y, dir, speed = map(float, (timestamp, x, y, dir, speed))
+        map_objects = []
+        if len(turple) > 0:
+            last = turple[6:]
+            i  = 0
+            while (i < len(last)):
+                if last[i] == objects.object_martian:
+                    object = (objects.object_martian, map(float, (last[i+1], last[i+2], last[i+3], last[i+4])))
                     i += 5
-                elif (tuple[i] == objects.home) or (tuple[i] == objects.crater) or (tuple[i] == objects.boulder):
-                   object = (tuple[i], (tuple[i+1], tuple[i+2], tuple[i+3]))
+                elif (last[i] == objects.object_home) or (last[i] == objects.object_crater) or (last[i] == objects.object_boulder):
+                   object = (last[i], map(float, last[i+1:i+4]))
                    i += 4
                 else:
                     print 'nenene, david blayne, nenenene'
-                objects.append(object)
-        message = (messages.TELE, (timestamp, control, x, y, dir, speed, objects))
+                    #print turple[5:]
+                map_objects.append(object)
+        message = (messages.TELE, (timestamp, control, x, y, dir, speed, map_objects))
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
@@ -108,10 +112,12 @@ class SocketReader(Thread):
         
 if __name__ == '__main__':
     import sys
-    #print 'creating schelduler'
     scheduler = SocketScheduler(sys.argv[1], int(sys.argv[2]))
     #print 'created'
     #print 'creating reader'
     reader = SocketReader(scheduler.sock, None, None)
     #print 'starting reader'
     reader.start()
+    
+    
+    

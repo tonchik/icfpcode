@@ -7,8 +7,12 @@ INIT = 'I'
 
 
 TELE = 'T'
-#TELE_MESSAGE = ('T', (
+#TELE_MESSAGE ::= ('T', ( timestamp, !control!, x, y, dir, speed, !objects!))
+# !objects! : == [None] | [('b', (x, y, radius))] | [( 'h', (x,y,radius)] | [('c', (x,y,radius)] | [('m', (x,y, dir, speed)]
 #
+#!control! :== (states.accelerating|states.rolling| states.breaking;  states.turn_left| states.turn_left_hard|....)
+#acelerate :== 
+
 END = 'E'
 # END_MESSAGE = ('E', (time, score))
 #
