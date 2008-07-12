@@ -39,6 +39,7 @@ class MessageParser():
         self.send_message_to_queue(message)
         #print 'init', dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard
     def telemetry_message(self, string):
+        print 'tele'
         turple = string.split()[1:]
         timestamp, control, x, y, dir, speed = turple[:6]
         timestamp,  x, y, dir, speed = map(float, (timestamp, x, y, dir, speed))
@@ -61,15 +62,18 @@ class MessageParser():
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
-        reason ,timestamp = string.split()[1:]#print 'die', string
+        print 'die_mess'
+        reason , timestamp = string.split()#print 'die', string
         message = (messages.DIE, (reason, timestamp))
         self.send_message_to_queue(message)
         #print 'dead!', reason
     def success_message(self, string):
+        print 'control'
         time = string.split()[1]#print 'success', string 
         message = (messages.SUCCESS, (time))
         self.send_message_to_queue(message)
     def end_message(self, string):
+        print 'end'
         time, score = string.split()[1:]#print 'end', string
         #print 'end score:', score
         message = (messages.END, (time, score))
@@ -107,7 +111,7 @@ class SocketReader(Thread):
                     break
                 ready_to_read, ready_to_write, error = select.select([self.sock],[],[self.sock], 30)
         except Exception, e:
-            print e
+            print e, '!'
         finally:
             self.sock.close()
         
