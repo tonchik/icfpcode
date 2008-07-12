@@ -22,8 +22,11 @@ class PathTracker(threading.Thread):
         #init queues and PathTrackingSheduler
         self.innerQueue = Queue.Queue(10000)
         self.senderQueue = Queue.Queue(10000)
+
         self.tcp_sender = tcp_sender.Sender(sock,self.senderQueue)
         self.pts = PathTrackingShed(self.innerQueue,self.innerQueue)
+        self.tcp_sender.start()
+        self.pts.start()
         threading.Thread.__init__(self)
     
     def run(self):
