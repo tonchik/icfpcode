@@ -35,29 +35,48 @@ class MessageParser():
         self.send_message_to_queue(message)
         #print 'init', dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard
     def telemetry_message(self, string):
-        turple = string.split()
-        message = (messages.TELE, turple)
+        turple = string.split()[1:]
+        timestamp, control, x, y, dir, speed = turple[0:5]
+        objects = []
+        if len(tuple) > 5:
+            while (i < len(tuple)):
+                if tuple[i] == objects.martian:
+                    object = (objects.martian, (tuple[i+1], tuple[i+2], tuple[i+3], tuple[i+4]))
+                    i += 5
+                elif (tuple[i] == objects.home) or (tuple[i] == objects.crater) or (tuple[i] == objects.boulder):
+                   object = (tuple[i], (tuple[i+1], tuple[i+2], tuple[i+3]))
+                   i += 4
+                else:
+                    print 'nenene, david blayne, nenenene'
+                objects.append(object)
+        message = (messages.TELE, (timestamp, control, x, y, dir, speed, objects))
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
-        reason ,timestamp = string.split()#print 'die', string
+        reason ,timestamp = string.split()[1:]#print 'die', string
         message = (messages.DIE, (reason, timestamp))
         self.send_message_to_queue(message)
         #print 'dead!', reason
     def success_message(self, string):
         time = string.split()[1]#print 'success', string 
         message = (messages.SUCESS, (time))
+        self.send_message_to_queue(message)
     def end_message(self, string):
         time, score = string.split()[1:]#print 'end', string
         #print 'end score:', score
         message = (messages.END, (time, score))
+        self.send_message_to_queue(message)
 class SocketReader(Thread):
-    def __init__(self, sock):
+    def __init__(self, sock, reader_2_creator, reader_2_tracker):
         self.sock = sock
         self.current_message = ''
         self.parser = MessageParser()
         #print self.parser
         #print
+        
+        self.reader_2_creator = reader_2_creator
+        self.reader_2_tracker = reader_2_tracker
+        
         Thread.__init__(self)
         
     def sendMessage(self,mess):
@@ -93,6 +112,6 @@ if __name__ == '__main__':
     scheduler = SocketScheduler(sys.argv[1], int(sys.argv[2]))
     #print 'created'
     #print 'creating reader'
-    reader = SocketReader(scheduler.sock)
+    reader = SocketReader(scheduler.sock, None, None)
     #print 'starting reader'
     reader.start()
