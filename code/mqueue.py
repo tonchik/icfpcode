@@ -31,3 +31,20 @@ class MQueue:
             self.nemptyevent.clear()
         self.lock.release()
         return obj
+    def isEmpty(self):
+        self.lock.acquire(True)
+        if len(self.queue) == 0:
+            bEmpty = True
+        else :
+            bEmpty = False
+        self.lock.release()
+        return bEmpty
+    def isFull(self):
+        self.lock.acquire(True)
+        if len(self.queue) == self.limit:
+            bEmpty = True
+        else :
+            bEmpty = False
+        self.lock.release()
+        return bEmpty
+    
