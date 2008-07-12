@@ -2,6 +2,7 @@ from threading import Thread
 
 import socket, select
 import messages, objects
+import time
 
 MSG_BUFF = 4096
 DELIM = ';'
@@ -35,7 +36,7 @@ class MessageParser():
         #print mess
     def init_message(self, string):
         turple = dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard = map(float, string.split()[1:])
-        message = (messages.INIT, turple)
+        message = (messages.INIT, turple, time.time())
         self.send_message_to_queue(message)
         #print 'init', dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard
     def telemetry_message(self, string):
@@ -58,7 +59,7 @@ class MessageParser():
                     print 'nenene, david blayne, nenenene'
                     #print turple[5:]
                 map_objects.append(object)
-        message = (messages.TELE, (timestamp, control, x, y, dir, speed, map_objects))
+        message = (messages.TELE, (timestamp, control, x, y, dir, speed, map_objects,time.time()))
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
