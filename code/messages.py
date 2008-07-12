@@ -26,6 +26,8 @@ SUCCESS = 'S'
 
 TERMINATE = 'X'
 
+SEND_MESSAGE = 'S'
+
 #
 #TERMINATE_MESS = ('X',)
 
