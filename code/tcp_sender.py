@@ -23,13 +23,14 @@ class Sender(Thread):
     def run(self):
         print 'Sender starting'
         try:
-            msg = self.queue.get()
-            if msg[0] == messages.SEND_MESSAGE:
-                self.send(msg[1])
-            elif msg[0] == messages.TERMINATE:
-                break
-            else:
-                assert(False)
+	    while(True) :
+                msg = self.queue.get()
+                if msg[0] == messages.SEND_MESSAGE:
+                    self.send(msg[1])
+                elif msg[0] == messages.TERMINATE:
+                    break
+                else:
+                    assert(False)
 
         except Exception, e:
             print e
