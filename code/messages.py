@@ -31,7 +31,6 @@ SEND_MESSAGE = 'N'
 
 TERMINATE = 'X'
 
-SEND_MESSAGE = 'S'
 
 #
 #TERMINATE_MESS = ('X',)
