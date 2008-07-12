@@ -1,55 +1,97 @@
 import sched,time
 import Queue
-import thread
+import threading
+import messages
 
-class Path:
-    def __init__():
-        self.path = []
-        '''
-            (x,y,al,v,va,time,dx,dy,dal,dv,dva,dtime?)
-        '''
-fields = ('x','y','al','v','va','time','dx','dy','dal','dv','dva','dtime')
+# class Path:
+    # def __init__():
+        # self.path = []
+        # '''
+            # (x,y,al,v,va,time,dx,dy,dal,dv,dva,dtime?)
+        # '''
+# fields = ('x','y','al','v','va','time','dx','dy','dal','dv','dva','dtime')
+#pathtracker = pathtracking.PathTracker(sheduler.sock, reader_2_tracker, creator_2_tracker)
 
-def SchedWrapper(q):
-    pts = PathTrackingShed(q)
-    pts.update()
+class PathTracking(threading.Thread):
+    def __init__(self,sock,reader_2_tracker, creator_2_tracker):
+        self.sock = sock
+        self.reader_2_tracker = reader_2_tracker
+        self.creator_2_tracker = creator_2_tracker
+        self.exit = False
+        #init queues and PathTrackingSheduler
+        self.innerQueue = Queue.Queue(10000)
+        self.senderQueue = Queue.Queue(10000)
+        self.pts = PathTrackingShed(self.innerQueue,self.senderQueue)
+        threading.Thread.__init__(self)
     
-class PathTrackingShed:
-    def __init__(self,q):
+    def run(self):
+        while True:
+             ParseReaderMessage()
+             ParseCreatorMessage()
+             process()
+             if self.exit:
+                break
+        #terminate all
+        self.innerQueue.put((messages.TERMINATE,))
+        self.senderQueue.put((messages.TERMINATE,))
+    def process(self):
+        pass
+    
+    def ParseReaderMessage(self):
+        msg = self.reader_2_tracker.get_nowait()
+        if msg[0] == messages.TERMINATE:
+            self.exit = True
+        print msg
+        
+    def ParseCreatorMessage(self):
+        pass
+        
+class CommandToSend:
+    def __init__(self,time,command):
+        self.command = command
+        self.time = time
+        
+class PathTrackingShed(threading.Thread):
+    def __init__(self,q,qout):
         self.sh = sched.scheduler(time.time,self.sleep)
         self.q = q
+        self.qout = qout
         self.events = [] #delay : command
         self.timestep = 0.05 # 5 ms
         self.exit = False
-       
+        threading.Thread.__init__(self)
+    
+        
     def send(self,elem):
-        print "sending%s"%elem
+        print "sending %s"%elem.command
         del self.events[0]
+        self.qout.put_nowait(('SEND',elem.command))
         print "len:%d"%len(self.events)
      
-    def update(self):
+    def run(self):
         while True:
-            msg = self.q.get()
-            if msg.data:
-                self.reset(msg.data)
-                self.sh.run()
-            
             if self.exit:
                 break
+                
+            msg = self.q.get()
+            if msg:
+                if msg.data:
+                    self.reset(msg.data)
+                    self.sh.run()       
+                if msg.isExitMessage():
+                    break
         
         
     def sleep(self,delay):
         while True:
             msg = None
-            try:
+            if not self.q.empty:
                 msg = self.q.get_nowait()
-            except Exception,e:
-                #print e
-                pass
                 
             if msg:
-                if msg.isExitMessage():
+                if msg[0] == messages.TERMINATE:
                     self.exit = True
+                    self.reset([])
                     break
                     
                 if msg.data:
@@ -60,7 +102,6 @@ class PathTrackingShed:
                 time.sleep(self.timestep)
             else:
                 break
-       
 
                 
     def reset(self,path):
@@ -75,7 +116,7 @@ class PathTrackingShed:
         self.path = path
 
         for elem in path:
-            event = self.sh.enterabs(elem['time'],1,self.send,([elem]))
+            event = self.sh.enterabs(elem.time,1,self.send,([elem]))
             self.events.append(event)
 
 
@@ -87,16 +128,23 @@ class Message:
         return self.bExit
         
 if __name__ == '__main__':
+    '''Tests and example of usage'''
     q1 = Queue.Queue(10000)
-    thread.start_new_thread(SchedWrapper, tuple([q1]))
+    q2 = Queue.Queue(10000)
+    #thread.start_new_thread(SchedWrapper, tuple([q1]))
+    pts = PathTrackingShed(q1,q2)
+    pts.start()
     cur_time = time.time()
-    Path = ({'time' : cur_time + 2  ,"blah" : 'stroka'},{'time' : cur_time + 12  ,"blah0" : 'stroka'},{'time' : cur_time + 20  ,"blah00" : 'stroka'})
+    Path = (CommandToSend(cur_time + 1,"al"),CommandToSend(cur_time + 5,"al2"),CommandToSend(cur_time + 12,"bl"))
     msg = Message(Path, False)
     q1.put_nowait(msg)
     time.sleep(10)
     cur_time = time.time()
-    Path = ({'time' : cur_time + 2  ,"blah2" : 'stroka'},{'time' : cur_time + 12  ,"blah3" : 'stroka'},{'time' : cur_time + 20  ,"blah4" : 'stroka'})
+    Path = (CommandToSend(cur_time + 1,"as"),CommandToSend(cur_time + 5,"ar"),CommandToSend(cur_time + 20,"rr"))
     msg = Message(Path, False)
     q1.put_nowait(msg)
-    time.sleep(40)
-    msg =Message(None,True)
+    time.sleep(10)
+    msg = Message(messages.TERMINATE)
+    q1.put_nowait(msg)
+    print "Thats all!"
+    
