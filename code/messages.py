@@ -24,6 +24,11 @@ SUCCESS = 'S'
 #SUCCESS_MESSAGE = ('S', (timestamp))
 #
 
+SEND_MESSAGE = 'N'
+#for Sender:
+#SEND_MESSAGE = ('N', command = ';' | 'a;' | 'b;' | 'l;' | 'r;' | 'al;' | 'ar;' | 'bl' | 'br')
+#
+
 TERMINATE = 'X'
 
 SEND_MESSAGE = 'S'
