@@ -35,6 +35,4 @@ class Sender(Thread):
         except Exception, e:
             print e
         finally:
-            self.socket.close()
-	
 	'Sender exiting'	
