@@ -22,8 +22,11 @@ class MessageParser():
    
     def __init__(self):
         self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die_message, 'C': self.die_message, 'K':self.die_message, 'S':self.success_message, 'E': self.end_message}
+        self.reader_2_creator = reader_2_creator
+        self.reader_2_tracker = reader_2_tracker
     def send_message_to_queue(self, mess):
-        print mess
+        self.reader_2_creator.put(mess)
+        self.reader_2_tracker.put(mess)
         
     def parse(self, mess):
         parse_funct = self.dict[mess[0]]
@@ -74,12 +77,11 @@ class SocketReader(Thread):
     def __init__(self, sock, reader_2_creator, reader_2_tracker):
         self.sock = sock
         self.current_message = ''
-        self.parser = MessageParser()
+        self.parser = MessageParser(reader_2_creator, reader_2_tracker)
         #print self.parser
         #print
         
-        self.reader_2_creator = reader_2_creator
-        self.reader_2_tracker = reader_2_tracker
+
         
         Thread.__init__(self)
         
