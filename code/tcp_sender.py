@@ -15,23 +15,26 @@ class Sender(Thread):
         while (totalsent < len(string)) and (len(self.ready_to_write) > 0) and (len(error) == 0):           
             sent = self.sock.send(msg[totalsent:])
             if sent == 0:
+		print 'ERROR sock.send'
                 break#raise RuntimeError , "socket connection broken"
-
             totalsent = totalsent + sent
             ready_to_read, ready_to_write, error = select.select([],[self.sock],[self.sock], 30)
 
     def run(self):
         print 'Sender starting'
         try:
-            msg = self.queue.get()
-            if msg[0] == messages.SEND_MESSAGE:
-                self.send(msg[1])
-            elif msg[0] == messages.TERMINATE:
-                break
-            else:
-                assert(False)
+	    while(True) :
+                msg = self.queue.get()
+                if msg[0] == messages.SEND_MESSAGE:
+                    self.send(msg[1])
+                elif msg[0] == messages.TERMINATE:
+                    break
+                else:
+                    assert(False)
 
         except Exception, e:
             print e
         finally:
             self.sock.close()
+	
+	'Sender exiting'	
