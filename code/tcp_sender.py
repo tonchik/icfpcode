@@ -13,7 +13,7 @@ class Sender(Thread):
         totalsent = 0
         ready_to_read, ready_to_write, error = select.select([],[self.socket],[self.socket], 30)
         while (totalsent < len(string)) and (len(ready_to_write) > 0) and (len(error) == 0):           
-            sent = self.socket.send(msg[totalsent:])
+            sent = self.socket.send(string[totalsent:])
             if sent == 0:
 		print 'ERROR sock.send'
                 break#raise RuntimeError , "socket connection broken"
@@ -28,11 +28,13 @@ class Sender(Thread):
                 if msg[0] == messages.SEND_MESSAGE:
                     self.send(msg[1])
                 elif msg[0] == messages.TERMINATE:
+                    print 'Terminate message has been arrived'             
                     break
                 else:
                     assert(False)
-
+            
         except Exception, e:
             print e
         finally:
-	'Sender exiting'	
+            pass
+        print 'Sender exiting'	
