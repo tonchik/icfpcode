@@ -24,7 +24,7 @@ class PathTracker(threading.Thread):
         self.senderQueue = Queue.Queue(10000)
 
         self.tcp_sender = tcp_sender.Sender(sock,self.senderQueue)
-        self.pts = PathTrackingShed(self.innerQueue,self.innerQueue)
+        self.pts = PathTrackingShed(self.innerQueue,self.senderQueue)
         self.tcp_sender.start()
         self.pts.start()
         threading.Thread.__init__(self)
@@ -56,7 +56,9 @@ class PathTracker(threading.Thread):
     def test(self):
         cur_time = time.time()
         path = (CommandToSend(cur_time + 1,"al;"),CommandToSend(cur_time + 5,"ar;"),CommandToSend(cur_time + 12,"b;"))
-        self.innerQueue.put(('Send',path))
+        msg  = ('Send',path)
+        print "put in inner que!"
+        self.innerQueue.put(msg)
         time.sleep(20)
         
 class CommandToSend:
@@ -88,7 +90,7 @@ class PathTrackingShed(threading.Thread):
             msg = self.q.get()
             
             if msg:
-                #print "msg in run %s"%(str(msg))
+                print "msg in run %s"%(str(msg))
                 
                 if len(msg)>1 and msg[1]:
                     self.reset(msg[1])
@@ -105,7 +107,7 @@ class PathTrackingShed(threading.Thread):
                 msg = self.q.get_nowait()
                 
             if msg:
-                #print "msg in sleep %s"%(str(msg))
+                print "msg in sleep %s"%(str(msg))
                 if msg[0] == messages.TERMINATE:
                     print "Try to exit!"
                     self.exit = True
@@ -132,8 +134,8 @@ class PathTrackingShed(threading.Thread):
                 print "Event not in que"
         self.events = []
         self.path = path
-
         for elem in path:
+            print elem
             event = self.sh.enterabs(elem.time,1,self.send,([elem]))
             self.events.append(event)
 
