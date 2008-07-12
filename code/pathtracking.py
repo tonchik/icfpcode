@@ -22,6 +22,7 @@ class PathTracker(threading.Thread):
         #init queues and PathTrackingSheduler
         self.innerQueue = Queue.Queue(10000)
         self.senderQueue = Queue.Queue(10000)
+        self.tcp_sender = tcp_sender.Sender(sock,senderQueue)
         self.pts = PathTrackingShed(self.innerQueue,self.senderQueue)
         threading.Thread.__init__(self)
     
@@ -30,11 +31,13 @@ class PathTracker(threading.Thread):
              self.ParseReaderMessage()
              self.ParseCreatorMessage()
              self.process()
+             self.test()
              if self.exit:
                 break
         #terminate all
         self.innerQueue.put((messages.TERMINATE,))
         self.senderQueue.put((messages.TERMINATE,))
+        
     def process(self):
         pass
     
@@ -46,6 +49,11 @@ class PathTracker(threading.Thread):
         
     def ParseCreatorMessage(self):
         pass
+    def test(self):
+        cur_time = time.time()
+        path = (CommandToSend(cur_time + 1,"al;"),CommandToSend(cur_time + 5,"ar;"),CommandToSend(cur_time + 12,"b;"))
+        self.innerQueue.put(('Send',path))
+        time.sleep(20)
         
 class CommandToSend:
     def __init__(self,time,command):
