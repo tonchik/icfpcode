@@ -19,7 +19,7 @@ if __name__ == '__main__' :
     creator = creator.Creator(reader_2_creator)
     creator.start()
 
-    pathtracker = pathtracking.PathTracker(sheduler.sock, reader_2_tracker, creator_2_tracker)
+    pathtracker = pathtracking.PathTracker(scheduler.sock, reader_2_tracker, creator_2_tracker)
     pathtracker.start()
 
     reader.join()

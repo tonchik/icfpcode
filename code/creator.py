@@ -1,14 +1,15 @@
 from threading import Thread
+import messages
 
 class Creator(Thread):
-    def __init__(self, reader_to_creator):
-        self.reader_to_creator = reader_to_creator
+    def __init__(self, reader_2_creator):
+        self.reader_2_creator = reader_2_creator
         Thread.__init__(self)
         
     def run(self):
         print 'Creator started'
         while True:
-            msg = reader_to_creator.get()
+            msg = self.reader_2_creator.get()
             if msg[0] == messages.TERMINATE:
                 break
         try:

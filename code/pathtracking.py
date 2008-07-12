@@ -2,6 +2,7 @@ import sched,time
 import Queue
 import threading
 import messages
+import tcp_sender
 
 # class Path:
     # def __init__():
@@ -12,7 +13,7 @@ import messages
 # fields = ('x','y','al','v','va','time','dx','dy','dal','dv','dva','dtime')
 #pathtracker = pathtracking.PathTracker(sheduler.sock, reader_2_tracker, creator_2_tracker)
 
-class PathTracking(threading.Thread):
+class PathTracker(threading.Thread):
     def __init__(self,sock,reader_2_tracker, creator_2_tracker):
         self.sock = sock
         self.reader_2_tracker = reader_2_tracker
@@ -26,9 +27,9 @@ class PathTracking(threading.Thread):
     
     def run(self):
         while True:
-             ParseReaderMessage()
-             ParseCreatorMessage()
-             process()
+             self.ParseReaderMessage()
+             self.ParseCreatorMessage()
+             self.process()
              if self.exit:
                 break
         #terminate all
@@ -38,7 +39,7 @@ class PathTracking(threading.Thread):
         pass
     
     def ParseReaderMessage(self):
-        msg = self.reader_2_tracker.get_nowait()
+        msg = self.reader_2_tracker.get()
         if msg[0] == messages.TERMINATE:
             self.exit = True
         print msg
