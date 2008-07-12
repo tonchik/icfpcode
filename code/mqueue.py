@@ -17,10 +17,13 @@ class MQueue:
     def put(self, obj):
         self.lock.acquire(True)
         if len(self.queue) == self.limit :
+            assert(0)
+            print 'queue overflow, disgard message'
             self.queue.pop(0)
         self.queue.append(obj)
         self.nemptyevent.set()
         self.lock.release()
+
     def get(self):
         self.nemptyevent.wait()
         self.lock.acquire(True)
@@ -29,20 +32,3 @@ class MQueue:
             self.nemptyevent.clear()
         self.lock.release()
         return obj
-    def isFull(self):
-	self.lock.acquire(True)
-	if len(self.queue) == self.limit :
-	    result = True
-	else :
-	    result = False
-	self.lock.release()
-	return result
-    def isEmpty(self):
-	self.lock.acquire(True)
-	if len(self.queue) == 0 :
-	    result = True
-	else :
-	    result = False
-	self.lock.release()
-	return result
-	
