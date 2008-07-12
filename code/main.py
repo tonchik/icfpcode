@@ -14,7 +14,7 @@ if __name__ == '__main__' :
     reader = tcp_reader.SocketReader(scheduler.sock, reader_2_creator, reader_2_tracker)
     reader.start()
     
-    creator = creator.Creator(reader_to_creator)
+    creator = creator.Creator(reader_2_creator)
     creator.start()
 
     pathtracker = pathtracking.PathTracker(sheduler.sock, reader_2_tracker, creator_2_tracker)
