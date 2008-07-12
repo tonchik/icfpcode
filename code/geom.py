@@ -22,37 +22,16 @@ class MPoint:
         assert(objpoint.r > 0)
         assert(self.r > 0)
         h = self.r
-        #gipo = ((destp.x - self.x)**2 + (destp.y - self.y)**2)**0.5
-        #cosa = (destp.x - self.x)/gipo
-        #sina = (destp.y - self.y)/gipo
-        #x1 = MPoint(self.x + h*sina, self.y - h*cosa, 0.0)
-        #x2 = MPoint(self.x - h*sina, self.y + h*cosa, 0.0)
-        #line1 = MLine(x1, cosa, sina)
-        #line2 = MLine(x2, cosa, sina)
         line = MLine(self, destp)
         dist = objpoint.distToLine(line)
-        if dist > (h + objpoint.r):
-            return False
-        return True
-        
-        #if abs(objpoint.distToLine(line1)) <= objpoint.r :
-        #    return (True, dist)
-        #elif abs(objpoint.distToLine(line2)) <= objpoint.r :
-        #    return (True, dist)
-        #else:
-        #    return (False, dist)
-    
-
-    
-    
+        if abs(dist) > (h + objpoint.r):
+            return (False, dist)
+        return (True, dist)
+     
 class MLine:
     def __init__(self, point,  point2):
-        #print 'Mline const'
-        #point.mprint()
-        #print 'cos sin', cosa, sina
-        #l = 0.1
-        x = point2.x# + l*cosa
-        y = point2.y# + l*sina
+        x = point2.x
+        y = point2.y
         if (y == point.y) :
             self.a = 0.0
             self.b = 1.0
@@ -69,5 +48,5 @@ if __name__ == '__main__':
     obstacle = MPoint(1.0, 1000.0, 0.3)
     destination = MPoint(1.0, 1.0, 0.0)
     
-    print rover.isObstacleInStripe(destination, obstacle)
-    #print b, d
+    b, d = rover.isObstacleInStripe(destination, obstacle)
+    print b, d
