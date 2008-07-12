@@ -22,8 +22,8 @@ class PathTracker(threading.Thread):
         #init queues and PathTrackingSheduler
         self.innerQueue = Queue.Queue(10000)
         self.senderQueue = Queue.Queue(10000)
-        self.tcp_sender = tcp_sender.Sender(sock,senderQueue)
-        self.pts = PathTrackingShed(self.innerQueue,self.senderQueue)
+        self.tcp_sender = tcp_sender.Sender(sock,self.senderQueue)
+        self.pts = PathTrackingShed(self.innerQueue,self.innerQueue)
         threading.Thread.__init__(self)
     
     def run(self):
@@ -43,6 +43,7 @@ class PathTracker(threading.Thread):
     
     def ParseReaderMessage(self):
         msg = self.reader_2_tracker.get()
+        print msg
         if msg[0] == messages.TERMINATE:
             self.exit = True
         print msg
