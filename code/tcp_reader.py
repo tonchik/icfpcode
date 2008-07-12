@@ -112,10 +112,12 @@ class SocketReader(Thread):
         
 if __name__ == '__main__':
     import sys
-    #print 'creating schelduler'
     scheduler = SocketScheduler(sys.argv[1], int(sys.argv[2]))
     #print 'created'
     #print 'creating reader'
     reader = SocketReader(scheduler.sock, None, None)
     #print 'starting reader'
     reader.start()
+    
+    
+    
