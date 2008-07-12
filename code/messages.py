@@ -2,12 +2,12 @@
 
 INIT = 'I'
 
-# INIT_MESSAGE = ( 'I', (    dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard    )  )
+# INIT_MESSAGE = ( 'I', (    dx, dy, time_limit, min_sensor, max_sensor, max_speed, max_turn, max_turn_hard,localtime)  )
 #
 
 
 TELE = 'T'
-#TELE_MESSAGE ::= ('T', ( timestamp, !control!, x, y, dir, speed, !objects!))
+#TELE_MESSAGE ::= ('T', ( timestamp, !control!, x, y, dir, speed, !objects!,localtime))
 # !objects! : == [None] | [('b', (x, y, radius))] | [( 'h', (x,y,radius)] | [('c', (x,y,radius)] | [('m', (x,y, dir, speed)]
 #
 #!control! :== (states.accelerating|states.rolling| states.breaking;  states.turn_left| states.turn_left_hard|....)
