@@ -35,15 +35,18 @@ class MQueue:
         self.lock.acquire(True)
         if len(self.queue) == 0:
             bEmpty = True
+            self.nemptyevent.clear()
         else :
+            self.nemptyevent.set()
             bEmpty = False
         self.lock.release()
         return bEmpty
     def isFull(self):
         self.lock.acquire(True)
         if len(self.queue) == self.limit:
+            self.nemptyevent.set()
             bEmpty = True
-        else :
+        else:
             bEmpty = False
         self.lock.release()
         return bEmpty
