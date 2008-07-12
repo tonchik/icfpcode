@@ -1,4 +1,3 @@
-from threads import MyQueue
 from threading import Thread
 
 class Creator(Thread):
@@ -10,7 +9,7 @@ class Creator(Thread):
         print 'Creator started'
         while True:
             msg = reader_to_creator.get()
-            if msg[0] == messages.Terminate:
+            if msg[0] == messages.TERMINATE:
                 break
         try:
             pass
