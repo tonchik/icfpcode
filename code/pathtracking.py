@@ -65,37 +65,42 @@ class PathTrackingShed(threading.Thread):
     def send(self,elem):
         print "sending %s"%elem.command
         del self.events[0]
-        self.qout.put_nowait(('SEND',elem.command))
+        self.qout.put_nowait((messages.SEND_MESSAGE,elem.command))
         print "len:%d"%len(self.events)
      
     def run(self):
         while True:
             if self.exit:
                 break
-                
             msg = self.q.get()
+            
             if msg:
-                if msg.data:
-                    self.reset(msg.data)
+                #print "msg in run %s"%(str(msg))
+                
+                if len(msg)>1 and msg[1]:
+                    self.reset(msg[1])
                     self.sh.run()       
-                if msg.isExitMessage():
+                if msg[0] == messages.TERMINATE:
                     break
         
         
     def sleep(self,delay):
         while True:
             msg = None
-            if not self.q.empty:
+            
+            if not self.q.empty():
                 msg = self.q.get_nowait()
                 
             if msg:
+                #print "msg in sleep %s"%(str(msg))
                 if msg[0] == messages.TERMINATE:
+                    print "Try to exit!"
                     self.exit = True
                     self.reset([])
                     break
                     
-                if msg.data:
-                    self.reset(msg.data)
+                if len(msg)>1 and msg[1]:
+                    self.reset(msg[1])
                     break
             if delay > self.timestep:
                 delay -= self.timestep
@@ -136,15 +141,15 @@ if __name__ == '__main__':
     pts.start()
     cur_time = time.time()
     Path = (CommandToSend(cur_time + 1,"al"),CommandToSend(cur_time + 5,"al2"),CommandToSend(cur_time + 12,"bl"))
-    msg = Message(Path, False)
+    msg = ('Send',Path)
     q1.put_nowait(msg)
     time.sleep(10)
     cur_time = time.time()
     Path = (CommandToSend(cur_time + 1,"as"),CommandToSend(cur_time + 5,"ar"),CommandToSend(cur_time + 20,"rr"))
-    msg = Message(Path, False)
+    msg = ('Send',Path)
     q1.put_nowait(msg)
     time.sleep(10)
-    msg = Message(messages.TERMINATE)
+    msg = (messages.TERMINATE,)
     q1.put_nowait(msg)
     print "Thats all!"
     
