@@ -20,11 +20,12 @@ class SocketScheduler:
 class MessageParser():
     
    
-    def __init__(self):
+    def __init__(self,reader_2_creator, reader_2_tracker):
         self.dict = {'I':self.init_message, 'T':self.telemetry_message, 'B': self.die_message, 'C': self.die_message, 'K':self.die_message, 'S':self.success_message, 'E': self.end_message}
         self.reader_2_creator = reader_2_creator
         self.reader_2_tracker = reader_2_tracker
     def send_message_to_queue(self, mess):
+        print mess
         self.reader_2_creator.put(mess)
         self.reader_2_tracker.put(mess)
         
