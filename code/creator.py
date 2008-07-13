@@ -4,8 +4,9 @@ import messages
 import objects
 
 class Creator(Thread):
-    def __init__(self, reader_2_creator):
+    def __init__(self, reader_2_creator, creator_2_tracker):
         self.reader_2_creator = reader_2_creator
+        self.creator_2_tracker  = creator_2_tracker
         self.world_container = WorldContainer()
         self.local_target = None
         self.global_target = (0,0)
@@ -14,12 +15,12 @@ class Creator(Thread):
     def sendWaypoint(self):
         waypoint = (self.local_target, self.global_target)
         print 'Creator: sending waypoint', waypoint
-        self.reader_2_creator.put(waypoint)
+        self.creator_2_tracker.put(waypoint)
         
     def isLocalNear(self):
         
-        res = (self.x - self.local_target)**2 + (self.y - self.local_target)**2 < self.radius
-        print 'Creator: checking if local target near self: %s, %s, targ: %s. Res is'%(self.x, self.x, self.local_target, res)
+        res = (self.x - self.local_target[0])**2 + (self.y - self.local_target[1])**2 < self.radius
+        print 'Creator: checking if local target near self: [%s, %s], targ: [%s, %s]. Res is %s'%(self.x, self.x, self.local_target[0],self.local_target[1], res)
         return res
     
     def run(self):
@@ -28,7 +29,7 @@ class Creator(Thread):
             print 'Creator: message recieved', msg
             if msg[0] == messages.TELE:
                 self.x, self.y = msg[1][2], msg[1][3]
-                if (0 == self.world_container.add_objects(msg)) and (not isLocalNear()):
+                if (0 == self.world_container.add_objects(msg)) and (not self.isLocalNear()):
                     print 'Creator: nothing changed'
                     continue                
                 else:
@@ -117,7 +118,7 @@ class WorldContainer():
         self.timestamp = -1
         print 'Creator: wrlcontainer created'
     def add_objects(self, tele_mess):
-        print 'Creator: wrld cont adding objects: %s'%tele_mess
+        print 'Creator: wrld cont adding objects', tele_mess
         '''returns 0 if nothing changed, 1 otherwise '''
         self.timestamp = tele_mess[1][0]
         visible_objects = tele_mess[1][6]
