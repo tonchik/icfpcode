@@ -1,4 +1,5 @@
 import math
+
 def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_point2):
     if (line_point1[1] == line_point2[1]) :
         a = 0.0
@@ -11,9 +12,23 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
         b = -b    
     dist = (a*dist_point[0] + b*dist_point[1]+ c)/((a*a + b*b)**0.5)
     print 'a,b,c', a,b,c
+    
+    xmax = max(line_point1[0], line_point2[0])
+    xmin = min(line_point1[0], line_point2[0])
+    
+    ymax = max(line_point1[1], line_point2[1])
+    ymin = min(line_point1[1], line_point2[1])
+    
+    if ((dist_point[0] > xmin) and (dist_point[0] < xmax)
+        and (dist_point[1] > ymin) and (dist_point[1] < ymax)) :
+        b_in_rect = True
+    else :
+        b_in_rect = False
+       
     if abs(dist) > (rover_radius + dist_radius):
-        return (False, dist)
-    return (True, dist)
+        return (b_in_rect, False, dist)
+    
+    return (b_in_rect, True, dist)
         
         
 class MPoint:
@@ -59,13 +74,8 @@ class MLine:
     def mprint(self):
         print 'mline', self
         print self.a, self.b, self.c
+        
 if __name__ == '__main__':
-    rover      = MPoint(0.0, 0.0, 0.2)
-    obstacle = MPoint(1.0, 1.0, 0.3)
-    destination = MPoint(-2.0, 2.0, 0.0)
-    
-    b, d = rover.isObstacleInStripe(destination, obstacle)
-    print b, d
     obstacle = (1.0, 1.0)
     obstacle_radius = 1
     
@@ -73,9 +83,15 @@ if __name__ == '__main__':
     rover_radius = 0.2
     
     target = (2.0, 2.0)
+       
+    br, b, d = fromPoint2Line(obstacle, obstacle_radius, rover_radius, rover, target)#rover.isObstacleInStripe(destination, obstacle)
+    print br, b, d
     
+    obstacle2 = (-obstacle[0], -obstacle[1])
     
+    print obstacle2
+    br, b, d = fromPoint2Line(obstacle2, obstacle_radius, rover_radius, rover, target)#rover.isObstacleInStripe(destination, obstacle)
+    print br, b, d
+ 
     
-    b, d = fromPoint2Line(obstacle, obstacle_radius, rover_radius, rover, target)#rover.isObstacleInStripe(destination, obstacle)
-    print b, d
     
