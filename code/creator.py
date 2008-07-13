@@ -48,7 +48,7 @@ class Creator(Thread):
                 self.world_container = WorldContainer()
                 
     def recalculate(self):
-        print 'Creator:'
+        print 'Creator:recalc'
         '''calculates  local target. Checks if home is reachable and calculates local waypoint'''
         object_2_distance = []
         isObstacleBetween = False
@@ -61,20 +61,26 @@ class Creator(Thread):
             if inRect and isObstacle:
                 isObstacleBetween = True
         if not isObstacleBetween:
+            print 'Creator: no obstacles between'
             self.local_target = self.global_target
         else:
+            print 'Creator: there are obstacles'
             #print 'some cool logic here!'
             cmp_f = lambda x, y: cmp(x[1]*x[1], y[1]*y[1])
             object_2_distance.sort(cmp = cmp_f)
+            print 'Creator: objsts', object_2_distance
             for i in xrange(len(object_2_distance)):
                 obstacle = object_2_distance
+                print 'Creator: trying to avoid obstacle', obstacle
                 local = getPointToSearch(object, self.global_target, obstacle_radius)
-                
+                print 'Creator: trying to avoid through' , local
                 nearest1 =  geom.fromPoint2Line(object_2_distance[(i+1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
                 nearest2 =  geom.fromPoint2Line(object_2_distance[(i-1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
                 
                 if (not (nearest1[1] and nearest1[0])) and (not (nearest1[1] and nearest1[0])):
+                    print 'Creator: no another obstacles found'
                     self.local_target = local
+                    print 'Creator: going to', local
                     break
             #nearest are at top
             
