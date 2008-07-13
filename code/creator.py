@@ -19,7 +19,7 @@ class Creator(Thread):
         
     def isLocalNear(self):
         
-        res = (self.x - self.local_target[0])**2 + (self.y - self.local_target[1])**2 < self.radius
+        res = (self.x - self.local_target[0])**2 + (self.y - self.local_target[1])**2 < self.radius*2
         print 'Creator: checking if local target near self: [%s, %s], targ: [%s, %s]. Res is %s'%(self.x, self.x, self.local_target[0],self.local_target[1], res)
         return res
     
