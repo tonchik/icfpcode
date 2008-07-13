@@ -59,7 +59,8 @@ class Creator(Thread):
             inRect, isObstacle, dist = geom.fromPoint2Line(object, self.world_container.hashmap[object][1], self.radius, (self.x, self.y), self.global_target)
             
             object_2_distance.append((object, dist))
-            
+            print 'checking if object', object, 'is obstacle. Dist is', dist, ' inRect', inRect, ' isObst', isObstacle
+            print 'params are', object, self.world_container.hashmap[object][1], self.radius, (self.x, self.y), self.global_target
             if inRect and isObstacle:
                 isObstacleBetween = True
         if not isObstacleBetween:
