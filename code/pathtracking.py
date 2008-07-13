@@ -194,7 +194,10 @@ class PathTracker(threading.Thread):
                     
         
     def ParseCreatorMessage(self):
-        pass
+        if not self.reader_2_tracker.isEmpty():
+            msg = self.reader_2_tracker.get()
+            print msg
+
 
     # def test(self):
         # if  hasattr(self,'pts') and not hasattr(self,'once'):
