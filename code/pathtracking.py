@@ -255,7 +255,7 @@ class PathTrackingShed(threading.Thread):
             msg = self.q.get()
             
             if msg:
-                print "msg in run %s"%(str(msg))
+                #print "msg in run %s"%(str(msg))
                 
                 if msg[0] == 'Send':
                     self.reset(msg[1])
@@ -310,7 +310,7 @@ class PathTrackingShed(threading.Thread):
             
         self.path = path
         for elem in path:
-            print elem
+            #print elem
             event = self.sh.enterabs(elem.time,1,self.send,([elem]))
             self.events.append(event)
 
@@ -341,5 +341,5 @@ if __name__ == '__main__':
     time.sleep(10)
     msg = (messages.TERMINATE,)
     q1.put_nowait(msg)
-    print "Thats all!"
+    #print "Thats all!"
     
