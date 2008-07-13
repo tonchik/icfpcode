@@ -92,7 +92,7 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
     checked_rect = checkRect(rect, 2*rover_radius)
         
     object_points = objectToReperPoints(dist_point, dist_radius)
-    b_in_rect = isPointsInRect(object_points, rect)
+    b_in_rect = isPointsInRect(object_points, checked_rect)
        
     if abs(dist) > (rover_radius + dist_radius):
         return (b_in_rect, False, dist)
@@ -102,6 +102,13 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
 if __name__ == '__main__':
 #def searchPoint(source, obstacle, obstacle_radius, source_radius, bright):
     #print fromPoint2Line((15.0, 15.0) ,5.0, 0.5 ,(25.0, 25.0) ,(0, 0))
-    print searchPoint((1e9,0), (0,0), 1, 2, True)
-    print searchPoint((1e9,0), (0,0), 1, 2, False)
+    boulder = (-2.0910000000000002, 10.109999999999999)
+    boulder_rad =  2.0
+    
+    i = (0, 30)
+    my_y = 30
+    
+    print fromPoint2Line(boulder, boulder_rad, 0.5, i, (0,0))
+    #print searchPoint((1e9,0), (0,0), 1, 2, True)
+    #print searchPoint((1e9,0), (0,0), 1, 2, False)
     
