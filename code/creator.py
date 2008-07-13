@@ -48,7 +48,7 @@ class Creator(Thread):
                 self.world_container = WorldContainer()
                 
     def recalculate(self):
-        print 'Creator:
+        print 'Creator:'
         '''calculates  local target. Checks if home is reachable and calculates local waypoint'''
         object_2_distance = []
         isObstacleBetween = False
