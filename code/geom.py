@@ -47,6 +47,7 @@ def isPointsInRect(points, rect) :
 
     
 def searchPoint(source, obstacle, obstacle_radius, source_radius, bleft):
+    obstacle_radius = obstacle_radius*1.5
     ao = (obstacle[0] - source[0], obstacle[1] - source[1])
     #print 'ao', ao
     ao_module = (ao[0]**2 + ao[1]**2)**0.5
