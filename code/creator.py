@@ -13,11 +13,13 @@ class Creator(Thread):
         self.x, self.y, self.radius = None, None, 0.5
         Thread.__init__(self)
     def sendWaypoint(self):
-        self.reader_2_creator = reader_2_creator.put((self.local_target, self.global_target))
+        waypoint = (self.local_target, self.global_target)
+        print 'Creator: sending waypoint', waypoint
+        self.reader_2_creator = reader_2_creator.put(waypoint)
+        
     def isLocalNear(self):
         return (self.x - self.local_target)**2 + (self.y - self.local_target)**2 < self.radius
     def run(self):
-        print 'Creator started'
         while True:
             msg = self.reader_2_creator.get()
             if msg[0] == messages.TELE:
@@ -54,8 +56,14 @@ class Creator(Thread):
             object_2_distance.sort(cmp = cmp_f)
             for i in xrange(len(object_2_distance)):
                 obstacle = object_2_distance
-                getPointToSearch(object, self.global_target, obstacle_radius)
-            #pass.....
+                local = getPointToSearch(object, self.global_target, obstacle_radius)
+                
+                nearest1 =  geom.fromPoint2Line(object_2_distance[(i+1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
+                nearest2 =  geom.fromPoint2Line(object_2_distance[(i-1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
+                
+                if (not (nearest1[1] and nearest1[0])) and (not (nearest1[1] and nearest1[0])):
+                    self.local_target = local
+                    break
             #nearest are at top
     def getPointToSearch(obstacle_coords, target_coords, obstacle_radius):
         obstacle_x, obstacle_y = obstacle_coords
