@@ -1,6 +1,5 @@
 import math
 
-
 def objectToReperPoints(obj_point, obj_radius) :
     p1 = (obj_point[0] , obj_point[1] + obj_radius)
     p2 = (obj_point[0] , obj_point[1] - obj_radius)
@@ -45,8 +44,6 @@ def isPointsInRect(points, rect) :
             return True
     return False
 
-
-
 def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_point2):
     if (line_point1[1] == line_point2[1]) :
         a = 0.0
@@ -63,7 +60,6 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
     checked_rect = checkRect(rect, 2*rover_radius)
         
     object_points = objectToReperPoints(dist_point, dist_radius)
-    print object_points
     b_in_rect = isPointsInRect(object_points, rect)
        
     if abs(dist) > (rover_radius + dist_radius):
