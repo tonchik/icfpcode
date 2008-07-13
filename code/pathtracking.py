@@ -34,7 +34,7 @@ class PathTracker(threading.Thread):
              self.ParseReaderMessage()
              self.ParseCreatorMessage()
              self.process()
-             self.test()
+             #self.test()
              if self.exit:
                 break
         #terminate all
@@ -46,10 +46,10 @@ class PathTracker(threading.Thread):
     
     def ParseReaderMessage(self):
         msg = self.reader_2_tracker.get()
-        print msg
+        #print msg
         if msg[0] == messages.TERMINATE:
             self.exit = True
-        print msg
+        #print msg
         
     def ParseCreatorMessage(self):
         pass
@@ -57,7 +57,7 @@ class PathTracker(threading.Thread):
         cur_time = time.time()
         path = (CommandToSend(cur_time + 1,"al;"),CommandToSend(cur_time + 5,"ar;"),CommandToSend(cur_time + 12,"b;"))
         msg  = ('Send',path)
-        print "put in inner que!"
+        #print "put in inner que!"
         self.innerQueue.put(msg)
         time.sleep(20)
         
@@ -78,10 +78,10 @@ class PathTrackingShed(threading.Thread):
     
         
     def send(self,elem):
-        print "sending %s"%elem.command
+        #print "sending %s"%elem.command
         del self.events[0]
         self.qout.put_nowait((messages.SEND_MESSAGE,elem.command))
-        print "len:%d"%len(self.events)
+        #print "len:%d"%len(self.events)
      
     def run(self):
         while True:
@@ -90,7 +90,7 @@ class PathTrackingShed(threading.Thread):
             msg = self.q.get()
             
             if msg:
-                print "msg in run %s"%(str(msg))
+                #print "msg in run %s"%(str(msg))
                 
                 if len(msg)>1 and msg[1]:
                     self.reset(msg[1])
@@ -107,9 +107,9 @@ class PathTrackingShed(threading.Thread):
                 msg = self.q.get_nowait()
                 
             if msg:
-                print "msg in sleep %s"%(str(msg))
+                #print "msg in sleep %s"%(str(msg))
                 if msg[0] == messages.TERMINATE:
-                    print "Try to exit!"
+                    #print "Try to exit!"
                     self.exit = True
                     self.reset([])
                     break
@@ -126,16 +126,17 @@ class PathTrackingShed(threading.Thread):
                 
     def reset(self,path):
         cur_time = time.time()
-        print "reseting! events len:%d"%(len(self.events))
+        #print "reseting! events len:%d"%(len(self.events))
         for i,elem in enumerate(self.events):
             try:
                 self.sh.cancel(elem)
             except RuntimeError:
-                print "Event not in que"
+                pass
+                #print "Event not in que"
         self.events = []
         self.path = path
         for elem in path:
-            print elem
+            #print elem
             event = self.sh.enterabs(elem.time,1,self.send,([elem]))
             self.events.append(event)
 
@@ -166,5 +167,5 @@ if __name__ == '__main__':
     time.sleep(10)
     msg = (messages.TERMINATE,)
     q1.put_nowait(msg)
-    print "Thats all!"
+    #print "Thats all!"
     
