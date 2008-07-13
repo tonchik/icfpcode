@@ -52,8 +52,11 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
     else:
         a = 1.0
         b = (line_point1[0] - line_point2[0])/(line_point1[1] - line_point2[1])
+        b = -b
         c = -line_point1[0] - b*line_point1[1]
-        b = -b    
+            
+        
+    print a, b, c
     dist = (a*dist_point[0] + b*dist_point[1]+ c)/((a*a + b*b)**0.5)
     
     rect = createRect(line_point1, line_point2)
