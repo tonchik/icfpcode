@@ -34,7 +34,7 @@ class PathTracker(threading.Thread):
              self.ParseReaderMessage()
              self.ParseCreatorMessage()
              self.process()
-             self.test()
+             #self.test()
              if self.exit:
                 break
         #terminate all
