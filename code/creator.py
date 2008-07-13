@@ -87,7 +87,7 @@ class Creator(Thread):
                     break
             #nearest are at top
             
-    def getPointToSearch(obstacle_coords, target_coords, obstacle_radius):
+    def getPointToSearch(self, obstacle_coords, target_coords, obstacle_radius):
         print 'Creator: trying to avoid obstacle %s, while trying to get to %s'%(obstacle_coords, target_coords)
         obstacle_x, obstacle_y = obstacle_coords
         target_x, target_y = target_coords
