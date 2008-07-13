@@ -9,34 +9,46 @@ class Creator(Thread):
         self.world_container = WorldContainer()
         self.local_target = None
         self.global_target = (0,0)
-        self.isHomeReachable = True
         self.x, self.y, self.radius = None, None, 0.5
         Thread.__init__(self)
     def sendWaypoint(self):
         waypoint = (self.local_target, self.global_target)
         print 'Creator: sending waypoint', waypoint
-        self.reader_2_creator = reader_2_creator.put(waypoint)
+        self.reader_2_creator.put(waypoint)
         
     def isLocalNear(self):
-        return (self.x - self.local_target)**2 + (self.y - self.local_target)**2 < self.radius
+        
+        res = (self.x - self.local_target)**2 + (self.y - self.local_target)**2 < self.radius
+        print 'Creator: checking if local target near self: %s, %s, targ: %s. Res is'%(self.x, self.x, self.local_target, res)
+        return res
+    
     def run(self):
         while True:
             msg = self.reader_2_creator.get()
+            print 'Creator: message recieved', msg
             if msg[0] == messages.TELE:
                 self.x, self.y = msg[1][2], msg[1][3]
                 if (0 == self.world_container.add_objects(msg)) and (not isLocalNear()):
+                    print 'Creator: nothing changed'
                     continue                
                 else:
+                    print 'Creator: smthing changed'
                     self.recalculate()
                     self.sendWaypoint()
             elif msg[0] == messages.TERMINATE:
+                print 'Creator: terminating'
                 break
             elif msg[0] == messages.INIT:
+                print 'Creator: initing'
                 self.x, self.y = msg[1][0],msg[1][1]
                 self.recalculate()
                 self.sendWaypoint()
+            elif msg[0] == messages.END:
+                print 'Creator: end. New world creating'
+                self.world_container = WorldContainer()
                 
     def recalculate(self):
+        print 'Creator:
         '''calculates  local target. Checks if home is reachable and calculates local waypoint'''
         object_2_distance = []
         isObstacleBetween = False
@@ -65,7 +77,9 @@ class Creator(Thread):
                     self.local_target = local
                     break
             #nearest are at top
+            
     def getPointToSearch(obstacle_coords, target_coords, obstacle_radius):
+        print 'Creator: trying to avoid obstacle %s, while trying to get to %s'%(obstacle_coords, target_coords)
         obstacle_x, obstacle_y = obstacle_coords
         target_x, target_y = target_coords
         
@@ -86,19 +100,23 @@ class Creator(Thread):
         
         
         delta_x, delta_y  = normal_vector_x * (obstacle_radius + self.x), normal_vector_y * (obstacle_radius + self.x)
+        result =  obstacle_x + delta_x, obstacle_y + delta_y
+        print 'Creator: trying to get to %s'%result
+        return result
         
-        return obstacle_x + delta_x, obstacle_y + delta_y
 class WorldContainer():
     def __init__(self):
         self.hashmap = {}
         self.prev_hash = 0
         self.timestamp = -1
-        
+        print 'Creator: wrlcontainer created'
     def add_objects(self, tele_mess):
+        print 'Creator: wrld cont adding objects: %s'%tele_mess
         '''returns 0 if nothing changed, 1 otherwise '''
         self.timestamp = tele_mess[1][0]
         visible_objects = tele_mess[1][6]
         if hash(visible_objects) == self.prev_hash:
+            print 'Creator: nthing changed'
             return 0
         for object in visible_objects:
             if not object[0] == objects.object_martian:
