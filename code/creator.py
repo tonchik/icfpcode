@@ -56,8 +56,9 @@ class Creator(Thread):
         for object in self.world_container.hashmap:
             if self.world_container.hashmap[object][0] == objects.object_home:
                 continue
-            inRect, isObstacle, dist = geom.fromPoint2Line(object, object_2_distance[object][1], self.radius, self.x, self.y, self.global_target)
-            object_2_distance.append(object, dist)
+            inRect, isObstacle, dist = geom.fromPoint2Line(object, self.world_container.hashmap[object][1], self.radius, (self.x, self.y), self.global_target)
+            
+            object_2_distance.append((object, dist))
             
             if inRect and isObstacle:
                 isObstacleBetween = True
@@ -75,8 +76,8 @@ class Creator(Thread):
                 print 'Creator: trying to avoid obstacle', obstacle
                 local = getPointToSearch(object, self.global_target, obstacle_radius)
                 print 'Creator: trying to avoid through' , local
-                nearest1 =  geom.fromPoint2Line(object_2_distance[(i+1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
-                nearest2 =  geom.fromPoint2Line(object_2_distance[(i-1) % len(object_2_distance)], object_2_distance[object][1], self.radius, self.x, self.y, local)
+                nearest1 =  geom.fromPoint2Line(object_2_distance[(i+1) % len(object_2_distance)], object_2_distance[object][1], self.radius, (self.x, self.y), local)
+                nearest2 =  geom.fromPoint2Line(object_2_distance[(i-1) % len(object_2_distance)], object_2_distance[object][1], self.radius, (self.x, self.y), local)
                 
                 if (not (nearest1[1] and nearest1[0])) and (not (nearest1[1] and nearest1[0])):
                     print 'Creator: no another obstacles found'
