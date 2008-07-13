@@ -50,16 +50,16 @@ class MessageParser():
             i  = 0
             while (i < len(last)):
                 if last[i] == objects.object_martian:
-                    object = (objects.object_martian, map(float, (last[i+1], last[i+2], last[i+3], last[i+4])))
+                    object = (objects.object_martian, ().__class__( map(float, last[i+1:i+5])) )
                     i += 5
                 elif (last[i] == objects.object_home) or (last[i] == objects.object_crater) or (last[i] == objects.object_boulder):
-                   object = (last[i], map(float, last[i+1:i+4]))
+                   object = (last[i], ().__class__(map(float, last[i+1:i+4])))
                    i += 4
                 else:
                     print 'nenene, david blayne, nenenene'
                     #print turple[5:]
                 map_objects.append(object)
-        message = (messages.TELE, (timestamp, control, x, y, dir, speed, map_objects,time.time()))
+        message = (messages.TELE, (timestamp, control, x, y, dir, speed, ().__class__(map_objects),time.time()))
         self.send_message_to_queue(message)
         #pass#print 'telemetry', string
     def die_message(self, string):
