@@ -1,4 +1,5 @@
 import math
+import cmath
 
 def objectToReperPoints(obj_point, obj_radius) :
     p1 = (obj_point[0] , obj_point[1] + obj_radius)
@@ -44,6 +45,33 @@ def isPointsInRect(points, rect) :
             return True
     return False
 
+    
+def searchPoint(source, obstacle, obstacle_radius, source_radius, bleft):
+    ao = (obstacle[0] - source[0], obstacle[1] - source[1])
+    #print 'ao', ao
+    ao_module = (ao[0]**2 + ao[1]**2)**0.5
+    #print 'ao_module', ao_module
+    ao_norm = (ao[0]/ao_module, ao[1]/ao_module)
+    #print 'ao_norm', ao_norm
+    if bleft:
+        sina = (obstacle_radius + source_radius)/ao_module
+        cosa = (1 - sina**2)**0.5
+    else :
+        sina = (obstacle_radius + source_radius)/ao_module
+        cosa = -(1 - sina**2)**0.5
+    
+    #print 'sin cos', sina, cosa
+    
+    ao_norm_c = complex(ao_norm[0], ao_norm[1])
+    #print 'ao_norm_c', ao_norm_c
+    #print 'rot', complex(-sina, cosa)
+    
+    ob = ao_norm_c*complex(-sina, cosa)*(source_radius + obstacle_radius)
+    #print 'ob', ob
+    result = (source[0] + ao[0] + ob.real, source[1] + ao[1] + ob.imag)
+    return result
+    
+    
 def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_point2):
     if (line_point1[1] == line_point2[1]) :
         a = 0.0
@@ -71,5 +99,8 @@ def fromPoint2Line(dist_point, dist_radius, rover_radius, line_point1, line_poin
     return (b_in_rect, True, dist)
 
 if __name__ == '__main__':
-    print fromPoint2Line((15.0, 15.0) ,5.0, 0.5 ,(25.0, 25.0) ,(0, 0))
+#def searchPoint(source, obstacle, obstacle_radius, source_radius, bright):
+    #print fromPoint2Line((15.0, 15.0) ,5.0, 0.5 ,(25.0, 25.0) ,(0, 0))
+    print searchPoint((1e9,0), (0,0), 1, 2, True)
+    print searchPoint((1e9,0), (0,0), 1, 2, False)
     
